@@ -1,46 +1,86 @@
-# 📚 LivrariaTheos — API de Gerenciamento de Livros
+# 📚 LivrariaTheos — Sistema de Gerenciamento de Livros
 
 ---
 
 ## 1️⃣ Visão Geral
 
 Aplicação desenvolvida como parte do desafio técnico da Théos, para gerenciar exemplares de uma livraria.  
-O projeto implementa um backend em **.NET 8 + ASP.NET Core Web API**, com persistência em **SQL Server** e autenticação via **JWT**.
+O projeto foi construído em dois módulos principais:
 
-- **Status atual:** Todos os requisitos obrigatórios do desafio atendidos.
-- **Diferenciais:** (Angular + Testes) planejados como próximos passos.
+- **Backend**: **.NET 8 + ASP.NET Core Web API**, persistência em **SQL Server** e autenticação via **JWT**.  
+- **Frontend**: **Angular 17/20 standalone**, integrado à API via proxy, com autenticação JWT, guards de rota e interceptors.  
 
----
-
-## 2️⃣ Requisitos do Desafio
-
-- ✅ **Listagem de livros ordenada por título (ASC)**
-- ✅ **CRUD completo de livros**
-- ✅ **Validação de duplicidade (Título + Autor + Ano)**
-- ✅ **Persistência em SQL Server 2014+**
-- ✅ **Logging de registros e erros (Serilog)**
-- ✅ **Swagger configurado**
-- ✅ **Autenticação com dois níveis:**
-  - **Público (anônimo):** leitura
-  - **Admin (JWT):** CRUD
-
-> **Critério de desempate:** aplicação de boas práticas (DDD, TDD, Design Patterns, SOLID, Clean Code)  
-> **Diferencial:** Frontend em Angular (planejado, não implementado ainda)
+**Status atual:** todos os requisitos obrigatórios concluídos, com frontend implementado.  
+**Próximos passos:** melhorias adicionais de UX, testes automatizados e containerização.
 
 ---
 
-## 3️⃣ Como Rodar Localmente
+## 2️⃣ Arquitetura do Projeto
 
-### 3.1 Pré-requisitos
+- **Backend**
+  - Padrão **DDD enxuto** com separação clara em camadas.  
+  - Persistência com **EF Core**, utilizando índices únicos para reforçar regras de negócio.  
+  - Autenticação via **JWT**, com um usuário administrador seedado.  
+  - **Logging centralizado** com Serilog e middleware global para tratamento de erros.
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download)
-- SQL Server 2014+ (pode ser Express)
-- (Opcional) Docker Desktop
+- **Frontend**
+  - Estrutura **Angular standalone** (sem NgModules), com menor boilerplate e alinhado às práticas modernas.  
+  - Guards de rota (`authGuard`, `adminGuard`) para proteger rotas privadas.  
+  - Interceptores para anexar token de autenticação e tratar erros (401/403).  
+  - Integração transparente com a API via **proxy (`/api`)**.
 
-### 3.2 Configurações
+---
 
-No arquivo `appsettings.json`:
+## 3️⃣ Requisitos Atendidos
 
+- ✅ Listagem de livros ordenada por título (ASC).  
+- ✅ CRUD completo de livros.  
+- ✅ Validação de duplicidade (Título + Autor + Ano).  
+- ✅ Persistência em SQL Server 2014+.  
+- ✅ Logging e padronização de erros.  
+- ✅ Swagger configurado.  
+- ✅ Autenticação com dois níveis:  
+  - Público (anônimo) → leitura.  
+  - Admin (JWT) → CRUD.  
+- ✅ Frontend funcional: login, listagem e criação de livros com rotas protegidas.
+
+---
+
+## 4️⃣ Estrutura de Pastas
+
+```
+/src
+  LivrariaTheos.Api            -> Controllers, Auth, Swagger, DI
+  LivrariaTheos.Application    -> DTOs, Use Cases/Handlers, Contracts
+  LivrariaTheos.Domain         -> Entidades, Regras, Interfaces
+  LivrariaTheos.Infrastructure -> EF Core, Repos, Migrations, Logging
+
+/tests
+  LivrariaTheos.Tests          -> (planejado) Unit/Integration
+
+/db
+  scripts/initial.sql          -> Script inicial do schema
+
+/forntend/livraria-theos-web
+  app/
+    core/ (services, interceptors, models)
+    features/ (auth, livros, home)
+    app.component.*, app.routes.ts
+  environments/
+  proxy.conf.json
+```
+
+---
+
+## 5️⃣ Backend — Como Rodar
+
+### Pré-requisitos
+- [.NET 8 SDK](https://dotnet.microsoft.com/download)  
+- SQL Server 2014+ (pode ser Express)  
+- (Opcional) Docker Desktop  
+
+### Configuração
+Arquivo `appsettings.json`:
 ```json
 "ConnectionStrings": {
   "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=LivrariaTheos;User Id=sa;Password=SUASENHA;TrustServerCertificate=True;MultipleActiveResultSets=True"
@@ -50,79 +90,63 @@ No arquivo `appsettings.json`:
 }
 ```
 
-### 3.3 Banco de Dados
+### Banco de Dados
+- **Migrations**
+  ```sh
+  dotnet ef database update --project src/LivrariaTheos.Infrastructure --startup-project src/LivrariaTheos.Api
+  ```
+- **Scripts**
+  ```sh
+  sqlcmd -S .\SQLEXPRESS -d LivrariaTheos -i db/scripts/initial.sql
+  ```
 
-**Opção A — Migrations**
-
-```sh
-dotnet ef database update --project src/LivrariaTheos.Infrastructure --startup-project src/LivrariaTheos.Api
-```
-
-**Opção B — Scripts SQL**
-
-```sh
-sqlcmd -S .\SQLEXPRESS -d LivrariaTheos -i db/scripts/initial.sql
-```
-
-### 3.4 Executar a API
-
+### Executar API
 ```sh
 dotnet run --project src/LivrariaTheos.Api
 ```
-
-➡️ Acesse [http://localhost:5122/swagger/index.html](http://localhost:5122/swagger/index.html)
+Swagger: [http://localhost:5122/swagger/index.html](http://localhost:5122/swagger/index.html)
 
 ---
 
-## 4️⃣ Autenticação & Autorização
+## 6️⃣ Frontend — Como Rodar
 
-**Usuário seedado (Admin):**
+### Pré-requisitos
+- [Node.js](https://nodejs.org) (versão 20+)  
+- npm (instalado junto com Node)  
 
-- Email: `admin@theos`
-- Senha: `Admin#2024!`
-
-**Login:**
-
-- Endpoint: `POST /api/auth/login`
-- Body:
-
-```json
-{ "email": "admin@theos", "senha": "Admin#2024!" }
+### Executar
+```sh
+cd forntend/livraria-theos-web
+npm install
+npm start --proxy-config proxy.conf.json
 ```
 
-- Retorna:
+➡️ Acesse [http://localhost:4200](http://localhost:4200)  
 
-```json
-{ "token": "<jwt>" }
-```
-
-No Swagger, clique em **Authorize** e informe:  
-`Bearer <token>`
-
----
-
-## 5️⃣ Endpoints Principais
-
-**Público (sem autenticação):**
-
-- `GET /api/livros?busca=&page=&pageSize=` → lista ordenada por Título ASC, com paginação/filtro
-- `GET /api/livros/{id}`
-
-**Admin (JWT + Role=Admin):**
-
-- `POST /api/livros`
-- `PUT /api/livros/{id}`
-- `DELETE /api/livros/{id}`
-
-**Regras de negócio:**
-
-- Duplicidade (Titulo, Autor, AnoPublicacao) → retorna **409 Conflict**
+### Observações
+- `environment.development.ts` define `apiBaseUrl: '/api'`.  
+- O proxy redireciona `/api` para `http://localhost:5122`.  
+- Login com usuário seed da API:  
+  - Email: `admin@theos`  
+  - Senha: `Admin#2024!`  
 
 ---
 
-## 6️⃣ Modelo de Domínio
+## 7️⃣ Autenticação & Fluxo de Acesso
 
-**Entidade Livro**
+- **Backend**
+  - Usuário admin seedado.  
+  - JWT configurado com role `Admin`.  
+
+- **Frontend**
+  - `authGuard`: exige login.  
+  - `adminGuard`: exige role Admin.  
+  - Interceptor de Auth: anexa token Bearer (ignora `/Auth/login`).  
+  - Interceptor de Erro: trata `401` (logout + redirect) e `403` (alerta).  
+
+---
+
+## 8️⃣ Modelo de Domínio
 
 | Campo           | Tipo      | Regras                                 |
 |-----------------|-----------|----------------------------------------|
@@ -137,111 +161,57 @@ No Swagger, clique em **Authorize** e informe:
 | Estoque         | int       | ≥0                                     |
 
 **Índices**
-
-- Único: (Titulo, Autor, AnoPublicacao)
-- Único condicional: ISBN (quando não nulo)
-
----
-
-## 7️⃣ Arquitetura & Estrutura de Pastas
-
-```
-/src
-  LivrariaTheos.Api            -> Controllers, Auth, Swagger, DI
-  LivrariaTheos.Application    -> DTOs, Use Cases/Handlers, Contracts
-  LivrariaTheos.Domain         -> Entidades, Regras, Interfaces
-  LivrariaTheos.Infrastructure -> EF Core, Repos, Migrations, Logging
-
-/tests
-  LivrariaTheos.Tests          -> (planejado) Unit/Integration
-
-/db
-  scripts/initial.sql          -> Script inicial do schema
-```
+- Único: (Titulo, Autor, AnoPublicacao).  
+- Único condicional: ISBN (quando não nulo).  
 
 ---
 
-## 8️⃣ Logging & Erros
+## 9️⃣ Logging & Erros
 
-- **Serilog** → console + arquivo (`logs/api-*.log`)
-- Middleware global → padroniza resposta de erro JSON com `traceId`, `message`, `details` (em Dev)
-
----
-
-## 9️⃣ Swagger
-
-- Documentação completa em `/swagger`
-- Esquema Bearer para autenticação
-- Códigos de resposta documentados: `200`, `201`, `400`, `401`, `403`, `404`, `409`, `500`
+- **Backend**
+  - Serilog (console + arquivo).  
+  - Middleware global padronizando respostas JSON (`traceId`, `message`, `details`).  
+- **Frontend**
+  - Interceptor de erro → feedback imediato em 401/403.  
 
 ---
 
 ## 🔟 Decisões Arquiteturais
 
-- EF Core escolhido pela agilidade
-- DDD enxuto com separação em camadas
-- Validações no domínio + índices no banco reforçando unicidade
-- SOLID aplicado (SRP, DIP, OCP)
+- **EF Core > Dapper**: por eu ter mais domínio no EF Core, resolvi utilizá-lo para otimizar o tempo de produção da aplicação.  
+- **Angular standalone**: escolhido por reduzir boilerplate (sem NgModules), facilitar manutenção e estar alinhado às boas práticas modernas recomendadas pela comunidade Angular.  
+- **Proxy Angular**: simplifica integração, evitando problemas de CORS.  
+- **SOLID aplicado**: SRP, DIP, OCP respeitados em backend e frontend.  
+- **DDD enxuto**: separação em camadas garantindo clareza arquitetural.  
 
 ---
 
-## 1️⃣1️⃣ Scripts & Migrations
+## 1️⃣1️⃣ Propostas de Implementação Adicional
 
-**Gerar migration inicial:**
+- Backend:  
+  - Testes automatizados (unitários e integração).  
+  - Health checks em `/health`.  
+  - Docker Compose (API + SQL Server).  
 
-```sh
-dotnet ef migrations add Initial --project src/LivrariaTheos.Infrastructure --startup-project src/LivrariaTheos.Api
-```
+- Frontend:  
+  - UX melhorada (feedback visual, loaders, toasts).  
+  - Paginação e busca avançada.  
 
-**Aplicar migration:**
-
-```sh
-dotnet ef database update --project src/LivrariaTheos.Infrastructure --startup-project src/LivrariaTheos.Api
-```
-
-**Exportar script SQL:**
-
-```sh
-dotnet ef migrations script --project src/LivrariaTheos.Infrastructure --startup-project src/LivrariaTheos.Api -o db/scripts/initial.sql
-```
+- Infraestrutura:  
+  - CI/CD com GitHub Actions.  
+  - Deploy em nuvem (Azure/AWS).  
 
 ---
 
-## 1️⃣2️⃣ Testes (Planejado)
+## 1️⃣2️⃣ Entrega
 
-- Domínio: título obrigatório, ano fora da faixa
-- Integração: unicidade (409), ordenação ASC
-- API: 401 sem token; 201 com token válido
-
----
-
-## 1️⃣3️⃣ Roadmap (Próximos Passos)
-
-- Frontend Angular (público + admin, JWT)
-- FluentValidation nos DTOs
-- Health Checks em `/health`
-- Docker Compose (API + SQL Server)
-- Testes automatizados (unit + integração)
+- Fork do repositório base → implementado no repo `teste.dotNet`.  
+- Currículo adicionado na raiz.  
+- Pull Request enviado para avaliação.  
 
 ---
 
-## 1️⃣4️⃣ Troubleshooting
-
-- Não conecta no SQL Server? Verifique `TrustServerCertificate=True`, instância `SQLEXPRESS` e credenciais
-- Token inválido no Swagger? Use `Bearer <token>`
-- 409 Conflict ao criar livro? Já existe um com mesmo (Titulo, Autor, AnoPublicacao)
-
----
-
-## 1️⃣5️⃣ Entrega
-
-- Fork do repositório base → implementado no repo `teste.dotNet`
-- Currículo adicionado na raiz
-- PR enviado para avaliação
-
----
-
-## 1️⃣6️⃣ Créditos
+## 1️⃣3️⃣ Créditos
 
 Desenvolvido por **Wilkson Colares**  
 [GitHub](#) | [LinkedIn](#)

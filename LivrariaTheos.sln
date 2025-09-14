@@ -5,17 +5,17 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaTheos.Api", "src\LivrariaTheos.Api\LivrariaTheos.Api.csproj", "{29127F76-8B6E-438D-B9D9-03D4AE5A4488}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaTheos.Api", "backend\src\LivrariaTheos.Api\LivrariaTheos.Api.csproj", "{29127F76-8B6E-438D-B9D9-03D4AE5A4488}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaTheos.Application", "src\LivrariaTheos.Application\LivrariaTheos.Application.csproj", "{8A8357B9-F2C8-431B-ACDC-CBA6338FFBF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaTheos.Application", "backend\src\LivrariaTheos.Application\LivrariaTheos.Application.csproj", "{8A8357B9-F2C8-431B-ACDC-CBA6338FFBF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaTheos.Domain", "src\LivrariaTheos.Domain\LivrariaTheos.Domain.csproj", "{18071A6E-6710-4D36-99A7-5861E1CE797C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaTheos.Domain", "backend\src\LivrariaTheos.Domain\LivrariaTheos.Domain.csproj", "{18071A6E-6710-4D36-99A7-5861E1CE797C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaTheos.Infrastructure", "src\LivrariaTheos.Infrastructure\LivrariaTheos.Infrastructure.csproj", "{2B25D8BA-BCCE-40E5-84FC-5AD366C51471}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaTheos.Infrastructure", "backend\src\LivrariaTheos.Infrastructure\LivrariaTheos.Infrastructure.csproj", "{2B25D8BA-BCCE-40E5-84FC-5AD366C51471}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaTheos.Tests", "tests\LivrariaTheos.Tests\LivrariaTheos.Tests.csproj", "{D24AACD5-7162-47EE-BC0B-0D9AC0F71A17}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaTheos.Tests", "backend\tests\LivrariaTheos.Tests\LivrariaTheos.Tests.csproj", "{D24AACD5-7162-47EE-BC0B-0D9AC0F71A17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using LivrariaTheos.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +41,23 @@ builder.Services.AddAuthorization(opt =>
     opt.AddPolicy("Admin", p => p.RequireRole("Admin"));
 });
 
-builder.Services.AddControllers();
+// Controllers + JSON (DateOnly / Enums)
+builder.Services.AddControllers()
+    .AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        o.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+    });
+
+// CORS para o Angular (http://localhost:4200)
+var MyCors = "AllowWeb";
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy(MyCors, p => p
+        .WithOrigins("http://localhost:4200")
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+});
 
 // Swagger + Bearer
 builder.Services.AddEndpointsApiExplorer();
@@ -48,7 +65,6 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Livraria Theòs API", Version = "v1" });
 
-    // Definição do esquema Bearer
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -59,7 +75,6 @@ builder.Services.AddSwaggerGen(c =>
         BearerFormat = "JWT"
     });
 
-    // Requirement referenciando explicitamente o esquema "Bearer"
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -76,7 +91,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-
 var app = builder.Build();
 
 // Middleware de erro simples
@@ -91,15 +105,21 @@ app.Use(async (ctx, next) =>
     }
 });
 
+app.UseSerilogRequestLogging();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseSerilogRequestLogging();
+app.UseCors(MyCors);
+
+app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
